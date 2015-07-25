@@ -1,7 +1,9 @@
 package irakli.peter.bouncyballs;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Graphics;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -24,14 +26,23 @@ public class Main extends JPanel implements KeyListener, ActionListener, Runnabl
 	public boolean movingRight = false;
 	public boolean movingLeft = false;
 	
-	public int xBall;
-	public int yBall;
-	public int xPaddle;
-	public int yPaddle;
+	public int xBall = 500;
+	public int yBall = 500;
+	public int heightBall = 15;
+	public int widthBall = 15;
+	public int xPaddle = 650;
+	public int yPaddle = 780;
+	public int heightPaddle = 15;
+	public int widthPaddle = 150;
+	public int xBrick = 15;
+	public int yBrick = 25;
+	public int heightBrick = 20;
+	public int widthBrick = 125;
 	
-	Rectangle ball = new Rectangle(xBall, yBall, 5, 5);
-	Rectangle paddle = new Rectangle(xPaddle, yPaddle, 40, 5);
-	Rectangle[] bricks = new Rectangle[12];
+	
+	Rectangle ball = new Rectangle(xBall, yBall, widthBall, heightBall);
+	Rectangle paddle = new Rectangle(xPaddle, yPaddle, widthPaddle, heightPaddle);
+	Rectangle[] bricks = new Rectangle[42];
 	
 	public Main() {
 		JFrame frame = new JFrame(NAME); 
@@ -53,28 +64,40 @@ public class Main extends JPanel implements KeyListener, ActionListener, Runnabl
 		b.addActionListener(this);
 	}
 	
+	public void paint(Graphics g) {
+		g.setColor(Color.BLACK);
+		g.fillOval(ball.x, ball.y, ball.width, ball.height);
+		g.setColor(Color.BLUE);
+		g.fill3DRect(paddle.x, paddle.y, paddle.width, paddle.height, true);
+		g.setColor(Color.RED);
+		for(int i = 0; i < bricks.length; i++) {
+			if(bricks[i] != null) {
+				g.fill3DRect(bricks[i].x, bricks[i].y, bricks[i].width, bricks[i].height, true);
+			}
+		}
+	}
 	
-	public void keyPressed(KeyEvent e) {
-		
-	}
-
-	public void keyReleased(KeyEvent e) {
-		
-	}
-
-	
-	public void keyTyped(KeyEvent e) {
-		
-	}
-
 	public void run() {
+		for(int i = 0; i < bricks.length; i++) {
+			bricks[i] = new Rectangle(xBrick, yBrick, widthBrick, heightBrick);
+			if(i == 10) {
+				xBrick = -55;
+				yBrick = 50;
+			}
+			if(i == 20) {
+				xBrick = -115;
+				yBrick = 75;
+			}
+			if (i == 31) {
+				xBrick = -55;
+				yBrick = 100;
+			}
+			xBrick += 130;
+		}
 		
 	}
 
-	public void actionPerformed(ActionEvent e) {
-	
-	}
-	
+
 	
 	
 	
@@ -88,8 +111,23 @@ public class Main extends JPanel implements KeyListener, ActionListener, Runnabl
 		t.start();
 	}
 	
+	public void keyPressed(KeyEvent e) {
+		
+	}
+
+	public void keyReleased(KeyEvent e) {
+		
+	}
+
+	
+	public void keyTyped(KeyEvent e) {
+		
+	}
+	
+	public void actionPerformed(ActionEvent e) {
 	
 	
+	}
 	
 	
 	
