@@ -31,14 +31,13 @@ public class Main extends JPanel implements KeyListener, ActionListener, Runnabl
 	public int heightBall = 15;
 	public int widthBall = 15;
 	public int xPaddle = 650;
-	public int yPaddle = 780;
+	public int yPaddle = 760;
 	public int heightPaddle = 15;
 	public int widthPaddle = 150;
 	public int xBrick = 15;
 	public int yBrick = 25;
 	public int heightBrick = 20;
 	public int widthBrick = 125;
-	
 	
 	Rectangle ball = new Rectangle(xBall, yBall, widthBall, heightBall);
 	Rectangle paddle = new Rectangle(xPaddle, yPaddle, widthPaddle, heightPaddle);
@@ -59,21 +58,20 @@ public class Main extends JPanel implements KeyListener, ActionListener, Runnabl
 		frame.setResizable(false);
 		frame.setLocationRelativeTo(null);
 		frame.setVisible(true);
+		frame.getContentPane().setBackground(Color.BLACK);
 		
 		frame.add(b, BorderLayout.SOUTH);
 		b.addActionListener(this);
 	}
 	
 	public void paint(Graphics g) {
-		g.setColor(Color.BLACK);
+		g.setColor(Color.CYAN);
 		g.fillOval(ball.x, ball.y, ball.width, ball.height);
 		g.setColor(Color.BLUE);
 		g.fill3DRect(paddle.x, paddle.y, paddle.width, paddle.height, true);
-		g.setColor(Color.RED);
+		g.setColor(Color.GREEN);
 		for(int i = 0; i < bricks.length; i++) {
-			if(bricks[i] != null) {
-				g.fill3DRect(bricks[i].x, bricks[i].y, bricks[i].width, bricks[i].height, true);
-			}
+			g.fill3DRect(bricks[i].x, bricks[i].y, bricks[i].width, bricks[i].height, true);
 		}
 	}
 	
@@ -94,12 +92,7 @@ public class Main extends JPanel implements KeyListener, ActionListener, Runnabl
 			}
 			xBrick += 130;
 		}
-		
 	}
-
-
-	
-	
 	
 	public static void main(String[] args) {
 		Main game = new Main();
@@ -125,12 +118,8 @@ public class Main extends JPanel implements KeyListener, ActionListener, Runnabl
 	}
 	
 	public void actionPerformed(ActionEvent e) {
-	
-	
+		
 	}
-	
-	
-	
-	
+
 
 }
