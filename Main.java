@@ -27,8 +27,6 @@ public class Main extends JPanel {
 	
 	public boolean movingRight = false;
 	public boolean movingLeft = false;
-	public boolean gameOver = false;
-	public int bricksGone = 0;
 	
 	public int xPaddle = 650;
 	public int yPaddle = 775;
@@ -40,92 +38,73 @@ public class Main extends JPanel {
 	public int heightBrick = 20;
 	public int widthBrick = 125;
 	
+	public int xBall = 100;
+	public int yBall = 100;
+	public int radius = 8;
+	public int dx = 8;
+	public int dy = 8;
+	
 	Rectangle paddle = new Rectangle(xPaddle, yPaddle, widthPaddle, heightPaddle);
 	Rectangle[] bricks = new Rectangle[42];
-	private List <Ball> balls;
+	Rectangle ball = new Rectangle(xBall, yBall, radius * 2, radius * 2);
 	
 	public Main() {
 		addKeyListener(new KeyListener() {
 			public void keyTyped(KeyEvent e) {
-				
 			}
 			
 			public void keyReleased(KeyEvent e) {
-			
+				movingRight = false;
+				movingLeft = false;
 			}
 			
 			public void keyPressed(KeyEvent e) {
-				if(e.getKeyCode() == KeyEvent.VK_RIGHT) {
-					paddle.x += 15;
+				if(e.getKeyCode() == KeyEvent.VK_RIGHT || e.getKeyCode() == KeyEvent.VK_D) {
+					movingRight = true;
 				}
-				if(e.getKeyCode() == KeyEvent.VK_LEFT) {
-					paddle.x -= 15;
+				if(e.getKeyCode() == KeyEvent.VK_LEFT || e.getKeyCode() == KeyEvent.VK_A) {
+					movingLeft = true;
 				}
 			}	
 		});
 		setFocusable(true);	
 		addBricks();
-		balls = new ArrayList<>();
-		for(int i = 0; i < 1; i++) { 
-			balls.add(new Ball(WIDTH, HEIGHT));
-		}
-		Timer timer = new Timer(15, new ActionListener() {
+		int delay = 20;
+		ActionListener taskPerformer = new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				for(Ball ball: balls) {
-					ball.move();
-				}
+				move();
 				repaint();
 			}
-		});
-		timer.start();
+		};
+		new Timer(delay, taskPerformer).start();
 	}
-	
+
 	protected void paintComponent(Graphics g) {
 		super.paintComponent(g);
-		for(Ball ball: balls) {
-			ball.drawBall(g);
-		}
+		g.setColor(Color.BLACK);
+		g.fillOval(xBall, yBall, radius * 2, radius * 2);
 		g.setColor(Color.BLUE);
 		g.fill3DRect(paddle.x, paddle.y, paddle.width, paddle.height, true);
 		g.setColor(Color.GREEN);
 		for(int i = 0; i < bricks.length; i++) {
 			g.fill3DRect(bricks[i].x, bricks[i].y, bricks[i].width, bricks[i].height, true);
 		}
-		
-		if(gameOver == true) {
-			Font f = new Font("Arial", Font.BOLD, 36);
-			g.setFont(f);
-			g.drawString("You Win!", 250, 450);
-		}
 	}
 	
-	
-	public class Ball {
-		public int xBall = 100;
-		public int yBall = 100;
-		public int radius = 8;
-		public int dx = 7;
-		public int dy = 7;
-		
-		public Ball(int xBall, int yBall) {
-			this.xBall = xBall;
-			this.yBall = yBall;
+	public void move() {
+		if(xBall < 0 || xBall > WIDTH) {
+			dx = -dx;
 		}
-		
-		public void drawBall(Graphics g) {
-			g.setColor(Color.BLACK);
-			g.fillOval(xBall, yBall, radius * 2, radius * 2);
+		if(yBall < 0 || yBall > HEIGHT) {
+			dy = -dy;
 		}
-		
-		public void move() {
-			if(xBall < 0 || xBall > WIDTH) {
-				dx = -dx;
-			}
-			if(yBall < 0 || yBall > HEIGHT) {
-				dy = -dy;
-			}
-			xBall += dx;
-			yBall += dy;
+		xBall += dx;
+		yBall += dy;
+		if(movingRight == true) {
+			paddle.x += 10;
+		}
+		if(movingLeft == true) {
+			paddle.x -= 10;
 		}
 	}
 	
@@ -152,13 +131,6 @@ public class Main extends JPanel {
 		return new Dimension(WIDTH, HEIGHT);
 	}
 	
-	public void movePaddle() {
-		while(movingRight == true) {
-			paddle.x += 10;
-		}
-	}
-	
-	
 	public static void main(String[] args) {
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
@@ -172,8 +144,5 @@ public class Main extends JPanel {
 				frame.getContentPane().setBackground(Color.BLACK);   //this isn't working, don't know why.
 			}
 		});
-		
 	}
-
-	
 }
