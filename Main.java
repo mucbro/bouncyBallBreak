@@ -1,29 +1,19 @@
 package irakli.peter.bouncyballs;
 
+import java.applet.Applet;
 import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Font;
 import java.awt.Graphics;
+import java.awt.Image;
 import java.awt.Rectangle;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
-import java.util.ArrayList;
-import java.util.List;
 
-import javax.swing.JFrame;
-import javax.swing.JPanel;
-import javax.swing.SwingUtilities;
-import javax.swing.Timer;
-
-public class Main extends JPanel {
+public class Main extends Applet implements Runnable {
 	
 	private static final long serialVersionUID = 1L;
 	
-	public static final int WIDTH = 1440;
+	public static final int WIDTH = 1460;
 	public static final int HEIGHT = 810;
-	public static final String NAME = "Peter and Irakli-- BrickBreak";
 	
 	public boolean movingRight = false;
 	public boolean movingLeft = false;
@@ -38,17 +28,21 @@ public class Main extends JPanel {
 	public int heightBrick = 20;
 	public int widthBrick = 125;
 	
-	public int xBall = 100;
-	public int yBall = 100;
-	public int radius = 8;
+	public int xBall = 150;
+	public int yBall = 450;
+	public int radius = 20;
 	public int dx = 8;
-	public int dy = 8;
+	public int dy = -8;
+	
+	private Image i;
+	private Graphics doubleG;
 	
 	Rectangle paddle = new Rectangle(xPaddle, yPaddle, widthPaddle, heightPaddle);
 	Rectangle[] bricks = new Rectangle[42];
 	Rectangle ball = new Rectangle(xBall, yBall, radius * 2, radius * 2);
 	
 	public Main() {
+		addBricks();
 		addKeyListener(new KeyListener() {
 			public void keyTyped(KeyEvent e) {
 			}
@@ -67,45 +61,6 @@ public class Main extends JPanel {
 				}
 			}	
 		});
-		setFocusable(true);	
-		addBricks();
-		int delay = 20;
-		ActionListener taskPerformer = new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				move();
-				repaint();
-			}
-		};
-		new Timer(delay, taskPerformer).start();
-	}
-
-	protected void paintComponent(Graphics g) {
-		super.paintComponent(g);
-		g.setColor(Color.BLACK);
-		g.fillOval(xBall, yBall, radius * 2, radius * 2);
-		g.setColor(Color.BLUE);
-		g.fill3DRect(paddle.x, paddle.y, paddle.width, paddle.height, true);
-		g.setColor(Color.GREEN);
-		for(int i = 0; i < bricks.length; i++) {
-			g.fill3DRect(bricks[i].x, bricks[i].y, bricks[i].width, bricks[i].height, true);
-		}
-	}
-	
-	public void move() {
-		if(xBall < 0 || xBall > WIDTH) {
-			dx = -dx;
-		}
-		if(yBall < 0 || yBall > HEIGHT) {
-			dy = -dy;
-		}
-		xBall += dx;
-		yBall += dy;
-		if(movingRight == true) {
-			paddle.x += 10;
-		}
-		if(movingLeft == true) {
-			paddle.x -= 10;
-		}
 	}
 	
 	private void addBricks() {
@@ -127,22 +82,73 @@ public class Main extends JPanel {
 		}
 	}
 	
-	public Dimension getPreferredSize() {
-		return new Dimension(WIDTH, HEIGHT);
+	public void init() {
+		setSize(WIDTH, HEIGHT);
+		setBackground(Color.BLACK);
 	}
 	
-	public static void main(String[] args) {
-		SwingUtilities.invokeLater(new Runnable() {
-			public void run() {
-				JFrame frame = new JFrame(NAME);
-				frame.add(new Main());
-				frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-				frame.pack();
-				frame.setLocationRelativeTo(null);
-				frame.setVisible(true);
-				frame.setResizable(false);
-				frame.getContentPane().setBackground(Color.BLACK);   //this isn't working, don't know why.
+	public void start() {
+		Thread thread = new Thread(this);
+		thread.start();
+	}
+	
+	public void run() {
+		Main main = new Main();
+		while(true) {
+			move();
+			repaint();
+			try {
+				Thread.sleep(17);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
 			}
-		});
+		}
+	}
+	
+	public void move() {
+		if(xBall + dx > this.getWidth() - radius || xBall + dx < radius) {
+			dx = -dx;
+		} 
+		if(yBall + dy > this.getHeight() - radius || yBall + dy < radius) {
+			dy = -dy;
+		} 
+		xBall += dx;
+		yBall += dy;
+		if(movingRight == true) {
+			paddle.x += 10;
+		}
+		if(movingLeft == true) {
+			paddle.x -= 10;
+		}
+	}
+	
+	public void stop() {
+	}
+	
+	public void destroy() {
+	}
+	
+	public void update(Graphics g) {
+		if(i == null) {
+			i = createImage(this.getSize().width, this.getSize().height);
+			doubleG = i.getGraphics();
+		}
+		doubleG.setColor(getBackground());
+		doubleG.fillRect(0, 0, this.getSize().width, this.getSize().height);
+		doubleG.setColor(getForeground());
+		paint(doubleG);
+		g.drawImage(i, 0, 0, this);
+	}
+	
+	public void paint(Graphics g) {
+		g.setColor(Color.CYAN);
+		g.fillOval(xBall - radius, yBall - radius, 2 * radius, 2 * radius);
+		
+		g.setColor(Color.BLUE);
+		g.fill3DRect(paddle.x, paddle.y, paddle.width, paddle.height, true);
+		g.setColor(Color.GREEN);
+		for(int i = 0; i < bricks.length; i++) {
+			g.fill3DRect(bricks[i].x, bricks[i].y, bricks[i].width, bricks[i].height, true);
+		}
 	}
 }
